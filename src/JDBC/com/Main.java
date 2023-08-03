@@ -1,14 +1,34 @@
-package com.example.demo;
+package com;
+
 
 import java.sql.*;
 import java.util.Scanner;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
 
 public class Main {
+    private static String DB_URL = "jdbc:mysql://localhost:3306/java30";
+    private static String USER_NAME = "root";
+    private static String PASSWORD = "123456";
     // Method to create the connection and set up database resources
-    private static Connection createConnection() throws SQLException, ClassNotFoundException {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        return DriverManager.getConnection("jdbc:mysql://localhost:3306/java30", "root", "123456");
+
+    public static Connection createConnection() {
+
+        Connection conn = null;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection(DB_URL, USER_NAME, PASSWORD);
+            System.out.println("connect successfully!");
+        } catch (Exception ex) {
+            System.out.println("connect failure!");
+            ex.printStackTrace();
+        }
+
+        return conn;
     }
+
+
 
     // Method to close the connection and other resources
     private static void closeResources(Connection conn, Statement stm, ResultSet rs) {
@@ -51,14 +71,7 @@ public class Main {
         String searchQuery = "SELECT * FROM brands WHERE name LIKE ?";
         PreparedStatement searchStatement = conn.prepareStatement(searchQuery);
         searchStatement.setString(1, "%" + searchKeyword + "%");
-        ResultSet rs = searchStatement.executeQuery();
-
-        // Display search results
-        while (rs.next()) {
-            int id = rs.getInt("id");
-            String name = rs.getString("name");
-            System.out.println("ID: " + id + ", Name: " + name);
-        }
+        queryAll(searchStatement.executeQuery());
     }
 
     public static void main(String[] args) {
@@ -71,23 +84,27 @@ public class Main {
             int rowsInserted = insertBrand(conn, "nike");
             System.out.println("Rows inserted: " + rowsInserted);
 
-            insertBrand(conn, "puma");
-            insertBrand(conn, "conver");
+            insertBrand(conn, "hwllo");
+            insertBrand(conn, "conver3333333");
 
             // Retrieve all brands
-            ResultSet rs = stm.executeQuery("SELECT * FROM brands");
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String name = rs.getString("name");
-                System.out.println("ID: " + id + ", Name: " + name);
-            }
+            queryAll(stm.executeQuery("SELECT * FROM brands"));
+            // id
+            //todo: fixbug
+//            filterById(conn,9);
+//            filterByName(conn,"puma");
+
+
+            //name
+
+
 
             // Assume we want to update the name of the brand with ID 1
-            int rowsUpdated = updateBrandName(conn, 1, "new_brand_name");
+            int rowsUpdated = updateBrandName(conn, 99, "444444444444");
             System.out.println("Rows updated: " + rowsUpdated);
 
             // Assume we want to delete the brand with ID 3
-            int rowsDeleted = deleteBrandById(conn, 3);
+            int rowsDeleted = deleteBrandById(conn, 117);
             System.out.println("Rows deleted: " + rowsDeleted);
 
             // Create a Scanner object to read user input
@@ -99,7 +116,44 @@ public class Main {
             searchBrandByName(conn, searchKeyword);
 
         } catch (Exception e) {
+
+
             System.out.println(e.getMessage());
+        }
+    }
+
+    //TODO:FIX BUG
+    private static void filterByName(Connection conn ,String name) throws SQLException {
+        PreparedStatement filterByNameStmt = conn.prepareStatement("SELECT name FROM brands WHERE name=?");
+        filterByNameStmt.setString(1, name);
+        ResultSet filterByNameResultSet = filterByNameStmt.executeQuery();
+
+        while (filterByNameResultSet.next()) {
+             name = filterByNameResultSet.getString("name");
+            int id = filterByNameResultSet.getInt("id");
+            System.out.println("ID: " + id + ", Name: " + name);
+        }
+    }
+    //TODO:FIX BUG
+    private static void filterById(Connection conn,int id) throws SQLException {
+        PreparedStatement filterByIdStmt = conn.prepareStatement("SELECT id FROM brands WHERE id=?");
+        filterByIdStmt.setInt(1, id);
+        ResultSet filterByIdResultSet = filterByIdStmt.executeQuery();
+
+        while (filterByIdResultSet.next()) {
+            id = filterByIdResultSet.getInt("id");
+            String  name = filterByIdResultSet.getString("name");
+
+            System.out.println("ID: " + id + ", Name: " + name);
+        }
+    }
+
+    private static void queryAll(ResultSet stm) throws SQLException {
+        ResultSet selectAll = stm;
+        while (selectAll.next()) {
+            int id = selectAll.getInt("id");
+            String name = selectAll.getString("name");
+            System.out.println("ID: " + id + ", Name: " + name);
         }
     }
 }
