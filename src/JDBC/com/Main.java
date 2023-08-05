@@ -91,8 +91,8 @@ public class Main {
             queryAll(stm.executeQuery("SELECT * FROM brands"));
             // id
             //todo: fixbug
-//            filterById(conn,9);
-//            filterByName(conn,"puma");
+            filterById(conn,9);
+            filterByName(conn,"puma");
 
 
             //name
@@ -124,7 +124,9 @@ public class Main {
 
     //TODO:FIX BUG
     private static void filterByName(Connection conn ,String name) throws SQLException {
-        PreparedStatement filterByNameStmt = conn.prepareStatement("SELECT name FROM brands WHERE name=?");
+//        PreparedStatement filterByNameStmt = conn.prepareStatement("SELECT name FROM brands WHERE name=?");
+        PreparedStatement filterByNameStmt = conn.prepareStatement("SELECT id, name FROM brands WHERE name=?");
+
         filterByNameStmt.setString(1, name);
         ResultSet filterByNameResultSet = filterByNameStmt.executeQuery();
 
@@ -136,7 +138,9 @@ public class Main {
     }
     //TODO:FIX BUG
     private static void filterById(Connection conn,int id) throws SQLException {
-        PreparedStatement filterByIdStmt = conn.prepareStatement("SELECT id FROM brands WHERE id=?");
+//        PreparedStatement filterByIdStmt = conn.prepareStatement("SELECT id FROM brands WHERE id=?");
+        PreparedStatement filterByIdStmt = conn.prepareStatement("SELECT id, name FROM brands WHERE id=?");
+
         filterByIdStmt.setInt(1, id);
         ResultSet filterByIdResultSet = filterByIdStmt.executeQuery();
 
